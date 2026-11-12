@@ -3,7 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import api from "../services/api";
 import { Navbar } from "../components/Navbar";
 import { Footer } from "../components/Footer";
-import { AlertBox } from "../components/UIComponents";
+import { AlertBox, PageHeader } from "../components/UIComponents";
 import { MovimentacoesAbas } from "../components/MovimentacoesAbas";
 import { AssinaturaPad } from "../components/AssinaturaPad";
 import { comprimirFoto } from "../components/LeituraRelogioFoto";
@@ -341,9 +341,14 @@ export function Arrecadacao() {
   };
 
   return (
-    <div className="min-h-screen bg-background-light">
+    <div className="min-h-screen bg-background-light bg-pattern teddy-pattern">
       <Navbar />
       <div className="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 py-6">
+        <PageHeader
+          title="Movimentações"
+          subtitle="Controle de arrecadação dos pontos"
+          icon="📦"
+        />
         <MovimentacoesAbas />
         {erro && <AlertBox type="error" message={erro} onClose={() => setErro("")} />}
         {aviso && <AlertBox type="success" message={aviso} onClose={() => setAviso("")} />}

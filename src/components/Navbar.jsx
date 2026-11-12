@@ -231,7 +231,7 @@ export function Navbar() {
       {isMenuOpen && (
         <div
           ref={menuRef}
-          className="absolute left-0 right-0 top-full bg-gray-900 border-t border-white/10 shadow-2xl max-h-[calc(100vh-5rem)] overflow-y-auto"
+          className="mb-menu absolute left-0 right-0 top-full border-t border-white/10 shadow-2xl max-h-[calc(100vh-5rem)] overflow-y-auto"
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">

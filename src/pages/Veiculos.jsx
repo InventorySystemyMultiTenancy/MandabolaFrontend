@@ -4,6 +4,8 @@ import ControleVeiculos from "../components/ControleVeiculos";
 import RegistroVeiculosMovimentacao from "../components/RegistroVeiculosMovimentacao";
 import AlertasVeiculos from "../components/AlertasVeiculos";
 import api from "../services/api";
+import { Navbar } from "../components/Navbar";
+import { PageHeader } from "../components/UIComponents";
 
 const initialFormState = {
   tipo: "moto",
@@ -90,37 +92,27 @@ export default function Veiculos() {
 //   };
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-gray-50 to-blue-50 p-0 md:p-8">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="flex flex-wrap justify-between items-center mb-8 gap-4 bg-white/80 rounded-xl shadow p-4 border border-gray-100 backdrop-blur-sm">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => navigate("/dashboard")}
-              className="px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow transition-all duration-150 flex items-center gap-2"
-            >
-              <span>←</span> Voltar para o Dashboard
-            </button>
-            <h1 className="text-3xl font-bold tracking-tight text-blue-900 drop-shadow-sm hidden sm:block">
-              Veículos
-            </h1>
-          </div>
-
-          <div className="flex gap-2">
-            <button
-              onClick={abrirModal}
-              className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 font-medium shadow-sm transition-colors"
-            >
-              + Novo Veículo
-            </button>
-            <button
-              onClick={() => setMostrarAlertas(!mostrarAlertas)}
-              className="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 font-medium shadow-sm transition-colors"
-            >
-              {mostrarAlertas ? "Ocultar Alertas" : "Ver Alertas"}
-            </button>
-          </div>
-        </div>
+    <div className="min-h-screen bg-background-light bg-pattern teddy-pattern">
+      <Navbar />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <PageHeader
+          title="Veículos"
+          subtitle="Frota, uso, combustível e alertas"
+          icon="🚐"
+          action={
+            <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:justify-end">
+              <button onClick={() => navigate("/")} className="btn-secondary flex items-center justify-center gap-2">
+                <span>←</span> Dashboard
+              </button>
+              <button onClick={() => setMostrarAlertas(!mostrarAlertas)} className="btn-secondary">
+                {mostrarAlertas ? "Ocultar Alertas" : "Ver Alertas"}
+              </button>
+              <button onClick={abrirModal} className="btn-primary">
+                + Novo Veículo
+              </button>
+            </div>
+          }
+        />
 
         {mostrarAlertas && (
           <div className="mb-8 animate-fadeIn">

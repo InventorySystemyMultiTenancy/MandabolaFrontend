@@ -184,7 +184,7 @@ export function MaquinaDetalhes() {
           }
           
           .header {
-            background: linear-gradient(to right, #0B1F5C, #0E8C83);
+            background: linear-gradient(to right, #0B1F5C, #1E5BD8);
             color: white;
             padding: 40px;
             text-align: center;
@@ -280,7 +280,7 @@ export function MaquinaDetalhes() {
           }
           
           .venda-card.total {
-            background: linear-gradient(135deg, #0B1F5C 0%, #0E8C83 100%);
+            background: linear-gradient(135deg, #0B1F5C 0%, #1E5BD8 100%);
             grid-column: 1 / -1;
             font-size: 1.2em;
           }

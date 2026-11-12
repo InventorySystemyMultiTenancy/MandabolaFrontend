@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Navbar } from "../components/Navbar";
+import { PageHeader } from "../components/UIComponents";
 import api from "../services/api";
 
 export function Usuarios() {
@@ -60,18 +61,20 @@ export function Usuarios() {
   }
 
   return (
-    <div className="min-h-screen bg-background-light">
+    <div className="min-h-screen bg-background-light bg-pattern teddy-pattern">
       <Navbar />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">
-            Gestão de Usuários
-          </h1>
-          <Link to="/usuarios/novo" className="btn-primary">
-            ➕ Novo Usuário
-          </Link>
-        </div>
+        <PageHeader
+          title="Gestão de Usuários"
+          subtitle="Equipe, perfis de acesso e permissões"
+          icon="👥"
+          action={
+            <Link to="/usuarios/novo" className="btn-primary inline-flex w-full items-center justify-center sm:w-auto">
+              ➕ Novo Usuário
+            </Link>
+          }
+        />
 
         {/* Filtros */}
         <div className="card mb-6">

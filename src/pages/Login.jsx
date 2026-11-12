@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import { ClawMachine3D } from "../components/dashboard/ClawMachine3D";
+import "../styles/dashboard.css";
 
 export function Login() {
   const [email, setEmail] = useState("");
@@ -27,37 +29,35 @@ export function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-secondary via-background-light to-accent-cream/30 px-4 bg-pattern relative overflow-hidden">
-      {/* Decorative elements */}
-      <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-primary/10 to-transparent rounded-full blur-3xl"></div>
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-tl from-accent-yellow/10 to-transparent rounded-full blur-3xl"></div>
-
-      <div className="relative card-gradient max-w-md w-full backdrop-blur-sm">
-        {/* Logo/Header Section */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center mb-4">
-            <img
-              src="/MandabolaLogo.png"
-              alt="Manda Bola Diversões"
-              className="w-38 h-38 object-contain"
-            />
+    <div className="min-h-screen bg-pattern teddy-pattern flex items-center justify-center px-4 py-8">
+      <div className="w-full max-w-5xl overflow-hidden rounded-[1.75rem] bg-white shadow-[0_40px_80px_-40px_rgba(11,31,92,0.6)] ring-1 ring-slate-900/5 md:grid md:grid-cols-[1.05fr_1fr]">
+        {/* Painel da marca */}
+        <aside className="mb-login-marca relative flex flex-col items-center justify-center gap-4 px-6 py-8 text-center text-white md:py-12">
+          <img
+            src="/MandabolaLogo.png"
+            alt="Manda Bola Premium Diversões"
+            className="mb-login-logo w-36 h-36 md:w-44 md:h-44 object-contain"
+          />
+          <div className="mb-page-header-entra">
+            <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight">Manda Bola Premium</h1>
+            <p className="mt-1 text-sm text-blue-100/80">Gestão inteligente de gruas e máquinas de pelúcia</p>
           </div>
-          <h1 className="text-4xl font-bold mb-2">
-            <span className="text-gradient">Manda Bola Diversões</span>
-          </h1>
-          <p className="text-gray-600 font-medium">
-            Sistema de Gestão de Pelúcias 🧸
+          <ClawMachine3D className="hidden md:block mt-2" />
+          <p className="hidden md:flex items-center gap-2 text-xs text-blue-100/70">
+            <span className="mb-pulso" aria-hidden="true" /> Operação, vendas e manutenção em um só lugar
           </p>
-          <div className="mt-2 inline-block bg-gradient-to-r from-primary/10 to-accent-yellow/20 px-4 py-1 rounded-full">
-            <p className="text-sm text-gray-700">
-              Controle seu estoque com facilidade
-            </p>
+        </aside>
+
+        {/* Formulário */}
+        <section className="px-6 py-8 sm:px-10 md:py-12">
+          <div className="mb-8">
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-primary">Bem-vindo de volta</p>
+            <h2 className="mt-1 text-2xl sm:text-3xl font-extrabold text-primary-dark">Entrar no sistema</h2>
           </div>
-        </div>
 
         <form onSubmit={handleSubmit} className="space-y-6" autoComplete="on">
           {error && (
-            <div className="alert-error animate-pulse">
+            <div className="alert alert-error mb-alerta-entra" role="alert">
               <div className="flex items-center gap-2">
                 <svg
                   className="w-5 h-5"
@@ -199,12 +199,14 @@ export function Login() {
           </p>
         </div>
 
-        {/* Footer decorativo */}
-        <div className="mt-6 pt-6 border-t border-gray-200 text-center">
-          <p className="text-xs text-gray-500">
-            Made with Coffe by Gabriel Akira & Mateus Saavedra
-          </p>
-        </div>
+
+          {/* Footer decorativo */}
+          <div className="mt-6 pt-6 border-t border-gray-200 text-center">
+            <p className="text-xs text-gray-500">
+              Made with Coffe by Gabriel Akira & Mateus Saavedra
+            </p>
+          </div>
+        </section>
       </div>
     </div>
   );

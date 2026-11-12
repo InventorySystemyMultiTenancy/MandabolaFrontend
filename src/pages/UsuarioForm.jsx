@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Navbar } from "../components/Navbar";
+import { PageHeader } from "../components/UIComponents";
 import api from "../services/api";
 import {
   CATALOGO_ABAS,
@@ -211,10 +212,15 @@ export function UsuarioForm() {
   }
 
   return (
-    <div className="min-h-screen bg-background-light">
+    <div className="min-h-screen bg-background-light bg-pattern teddy-pattern">
       <Navbar />
 
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <PageHeader
+          title={isEdit ? "Editar Usuário" : "Novo Usuário"}
+          subtitle="Dados de acesso, perfil e permissões"
+          icon="👤"
+        />
         <div className="mb-6">
           <button
             onClick={() => navigate("/usuarios")}
@@ -225,9 +231,6 @@ export function UsuarioForm() {
         </div>
 
         <div className="card">
-          <h1 className="text-2xl font-bold text-gray-900 mb-6">
-            {isEdit ? "Editar Usuário" : "Novo Usuário"}
-          </h1>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {error && (

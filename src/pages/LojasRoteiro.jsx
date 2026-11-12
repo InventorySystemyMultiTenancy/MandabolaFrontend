@@ -111,6 +111,11 @@ export function LojasRoteiro() {
       <div className="min-h-screen bg-background-light bg-pattern teddy-pattern">
         <Navbar />
         <div className="max-w-7xl mx-auto px-4 py-8">
+          <PageHeader
+            title={roteiro.zona || "Roteiro"}
+            subtitle={`${lojasConcluidas.length} de ${totalLojas} loja(s) concluída(s)`}
+            icon="🗺️"
+          />
           {/* Lojas Concluídas - aparecem primeiro */}
           {lojasConcluidas.length > 0 && (
             <div className="mb-8">

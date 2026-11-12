@@ -354,13 +354,14 @@ export function MandaAI() {
         <button
           type="button"
           onClick={() => setAberto(true)}
-          className="mandaai-fab fixed bottom-4 right-4 z-[60] flex items-center gap-2 rounded-full py-2.5 pl-2.5 pr-4 font-bold text-white sm:bottom-6 sm:right-6"
+          className="mandaai-fab fixed bottom-4 right-4 z-[60] flex items-center gap-2 rounded-full p-1.5 font-bold text-white sm:bottom-6 sm:right-6 sm:py-2.5 sm:pl-2.5 sm:pr-4"
           title="MandaAI — manda aí a sua pergunta (Ctrl+K)"
+          aria-label="Abrir MandaAI — manda aí a sua pergunta"
         >
           <span className="mandaai-fab-icone flex h-9 w-9 items-center justify-center rounded-full bg-white/15 text-accent-yellow">
             <IconeMandaAI />
           </span>
-          <span className="leading-tight text-left">
+          <span className="hidden leading-tight text-left sm:block">
             <span className="block text-sm">MandaAI</span>
             <span className="block text-[10px] font-medium text-white/75">manda aí a sua pergunta</span>
           </span>

@@ -1,52 +1,71 @@
+import { CountUp } from "./CountUp";
+
 /**
- * PageHeader - Componente de cabeçalho de página padronizado
+ * PageHeader - Cabeçalho padrão das páginas (marinho, ícone 3D, ações).
+ * Mesma API de antes: { title, subtitle, icon, action }.
  */
 export function PageHeader({ title, subtitle, icon, action }) {
   return (
-    <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-      <div>
-        <h1 className="text-4xl font-bold mb-2 flex items-center gap-3">
-          {icon && <span className="text-5xl">{icon}</span>}
-          <span className="text-gradient">{title}</span>
-        </h1>
-        {subtitle && <p className="text-gray-600 text-lg">{subtitle}</p>}
-      </div>
-      {action && (
-        <div>
-          {typeof action === "object" && action.label ? (
-            <button onClick={action.onClick} className="btn-primary">
-              {action.label}
-            </button>
-          ) : (
-            action
+    <header className="mb-page-header">
+      <div className="relative z-10 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div className="mb-page-header-entra flex min-w-0 items-center gap-4">
+          {icon && (
+            <span className="mb-page-header-icone" aria-hidden="true">
+              <span>{icon}</span>
+            </span>
           )}
+          <div className="min-w-0">
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">{title}</h1>
+            {subtitle && <p className="mb-page-header-sub mt-1 text-sm sm:text-base">{subtitle}</p>}
+          </div>
         </div>
-      )}
-    </div>
+        {action && (
+          <div className="mb-page-header-acoes mb-page-header-entra">
+            {typeof action === "object" && action.label ? (
+              <button onClick={action.onClick} className="mb-btn mb-btn-ouro w-full sm:w-auto">
+                {action.label}
+              </button>
+            ) : (
+              <div>{action}</div>
+            )}
+          </div>
+        )}
+      </div>
+    </header>
   );
 }
 
 /**
  * StatsGrid - Grid de cards de estatísticas
  */
+// Cores fora da identidade (roxo/rosa) viram o azul da marca. Verde, vermelho,
+// laranja e amarelo continuam: indicam situação (ok, crítico, atenção).
+const GRADIENTE_MARCA = "bg-gradient-to-br from-primary to-primary-dark";
+const gradienteDaMarca = (gradiente) =>
+  !gradiente || /\b(purple|pink|violet|fuchsia|indigo)-/.test(gradiente) ? GRADIENTE_MARCA : gradiente;
+
 export function StatsGrid({ stats }) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5 mb-8">
       {stats.map((stat, index) => (
         <div
           key={index}
-          className={`stat-card ${
-            stat.gradient || "bg-gradient-to-br from-primary to-primary-dark"
-          }`}
+          className={`stat-card ${gradienteDaMarca(stat.gradient)}`}
         >
           <div className="relative z-10">
             <div className="flex items-center justify-between mb-2">
-              <h3 className="text-sm font-medium opacity-90">{stat.label}</h3>
+              <h3 className="text-xs font-semibold uppercase tracking-[0.1em] opacity-90">{stat.label}</h3>
               {stat.icon && (
                 <div className="w-8 h-8 opacity-80">{stat.icon}</div>
               )}
             </div>
-            <p className="text-3xl font-bold">{stat.value}</p>
+            <p className="text-3xl font-extrabold tracking-tight">
+              {typeof stat.value === "number" ? (
+                <CountUp valor={stat.value} formatar={(n) => Math.round(n).toLocaleString("pt-BR")} />
+              ) : (
+                stat.value
+              )}
+            </p>
             {stat.subtitle && (
               <p className="text-xs opacity-75 mt-1">{stat.subtitle}</p>
             )}
@@ -79,7 +98,7 @@ export function DataTable({
   if (!data || !Array.isArray(data) || data.length === 0) {
     return (
       <div className="card text-center py-12">
-        <div className="text-6xl mb-4">📊</div>
+        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 text-3xl">📊</div>
         <p className="text-gray-600">{emptyMessage}</p>
       </div>
     );
@@ -176,7 +195,7 @@ export function AlertBox({ type = "info", title, message, onClose }) {
   const config = configs[type];
 
   return (
-    <div className={`alert ${config.class} animate-pulse`}>
+    <div className={`alert ${config.class} mb-alerta-entra`} role={type === "error" ? "alert" : "status"}>
       <div className="flex items-start justify-between">
         <div className="flex items-start gap-3 flex-1">
           <div className="flex-shrink-0 mt-0.5">{config.icon}</div>
@@ -189,6 +208,7 @@ export function AlertBox({ type = "info", title, message, onClose }) {
           <button
             onClick={onClose}
             className="flex-shrink-0 ml-4 hover:opacity-70 transition-opacity"
+            aria-label="Fechar aviso"
           >
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
               <path
@@ -222,19 +242,22 @@ export function Modal({ isOpen, onClose, title, children, size = "md" }) {
       <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
         {/* Overlay */}
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 transition-opacity backdrop-blur-sm"
+          className="mb-modal-fundo fixed inset-0 bg-[#07123A]/60 transition-opacity backdrop-blur-sm"
           onClick={onClose}
         ></div>
 
         {/* Modal */}
         <div
-          className={`relative card ${sizeClasses[size]} w-full transform transition-all`}
+          className={`mb-modal-caixa relative card ${sizeClasses[size]} w-full`}
+          role="dialog"
+          aria-modal="true"
         >
           <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-200">
-            <h3 className="text-2xl font-bold text-gradient">{title}</h3>
+            <h3 className="text-xl sm:text-2xl font-extrabold text-primary-dark">{title}</h3>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 transition-colors"
+              className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-colors"
+              aria-label="Fechar"
             >
               <svg
                 className="w-6 h-6"

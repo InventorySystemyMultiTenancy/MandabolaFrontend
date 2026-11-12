@@ -1605,7 +1605,7 @@ export function Relatorios() {
                   onClick={() =>
                     abrirLojaMovimentacoes(lojaDestinoMovimentacoesId)
                   }
-                  className={`card bg-linear-to-br from-purple-500 to-purple-600 text-white text-left transition-transform ${
+                  className={`card bg-linear-to-br from-primary to-primary-dark text-white text-left transition-transform ${
                     lojaDestinoMovimentacoesId
                       ? "hover:scale-[1.02] cursor-pointer"
                       : "opacity-70 cursor-not-allowed"
@@ -1847,7 +1847,7 @@ export function Relatorios() {
             {/* DETALHAMENTO POR MÁQUINA - PRINCIPAL */}
             {maquinas.length > 0 && (
               <div className="space-y-6">
-                <div className="card bg-linear-to-r from-indigo-500 to-purple-600 text-white">
+                <div className="card bg-linear-to-r from-primary to-primary-dark text-white">
                   <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold flex items-center gap-2 sm:gap-3">
                     <span className="text-3xl sm:text-4xl">🎰</span>
                     <span className="wrap-break-word">
@@ -1866,7 +1866,7 @@ export function Relatorios() {
                     className="card border-4 border-indigo-300 shadow-2xl page-break-before"
                   >
                     {/* Header da Máquina com destaque */}
-                    <div className="bg-linear-to-r from-indigo-600 to-purple-600 text-white p-4 sm:p-6 rounded-xl mb-4 sm:mb-6 shadow-lg">
+                    <div className="bg-linear-to-r from-primary to-primary-dark text-white p-4 sm:p-6 rounded-xl mb-4 sm:mb-6 shadow-lg">
                       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                         <div className="flex-1">
                           <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-2">
@@ -1946,7 +1946,7 @@ export function Relatorios() {
                             Produtos Entraram
                           </div>
                         </div>
-                        <div className="bg-linear-to-br from-purple-500 to-purple-600 text-white p-3 sm:p-5 rounded-xl shadow-lg">
+                        <div className="bg-linear-to-br from-primary to-primary-dark text-white p-3 sm:p-5 rounded-xl shadow-lg">
                           <div className="text-2xl sm:text-4xl mb-1 sm:mb-2 text-center">
                             🔄
                           </div>
@@ -2459,7 +2459,8 @@ export function Relatorios() {
           .from-red-500, .to-red-600,
           .from-green-500, .to-green-600,
           .from-purple-500, .to-purple-600,
-          .from-indigo-500, .to-indigo-500 {
+          .from-indigo-500, .to-indigo-500,
+          .from-primary, .to-primary-dark {
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
           }

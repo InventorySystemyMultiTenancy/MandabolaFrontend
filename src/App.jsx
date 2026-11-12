@@ -9,6 +9,7 @@ import { PageLoader } from "./components/Loading";
 import { AlertaFinanceiro } from "./components/AlertaFinanceiro";
 import RoteiroLocationTracker from "./components/RoteiroLocationTracker.jsx";
 import { MandaAI } from "./components/MandaAI.jsx";
+import { RevealGlobal } from "./components/RevealGlobal.jsx";
 
 // Lazy load das páginas para reduzir bundle inicial
 const Manutencoes = lazy(() => import("./pages/Manutencoes").then(m => ({ default: m.default })));
@@ -57,6 +58,7 @@ function AppRoutes() {
         <RoteiroLocationTracker usuario={usuario} />
         <AlertaFinanceiro />
         <MandaAI />
+        <RevealGlobal />
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/registrar" element={<Registrar />} />

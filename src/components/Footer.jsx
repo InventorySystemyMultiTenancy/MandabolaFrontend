@@ -1,6 +1,6 @@
 export function Footer() {
   return (
-    <footer className="mt-12 border-t-4 border-accent-yellow" style={{ background: 'linear-gradient(to right, #0B1F5C, #0E8C83)', textShadow: '0 2px 4px rgba(0,0,0,0.5)', color: '#FFFFFF' }}>
+    <footer className="mt-12 border-t-4 border-accent-yellow" style={{ background: 'radial-gradient(600px 240px at 90% 0%, rgba(56,189,248,0.14), transparent 60%), linear-gradient(135deg, #07123A, #0B1F5C 55%, #143E9E)', textShadow: '0 2px 4px rgba(0,0,0,0.5)', color: '#FFFFFF' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Branding */}
