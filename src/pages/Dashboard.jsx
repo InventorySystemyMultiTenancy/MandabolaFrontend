@@ -10,6 +10,7 @@ import { AlertaRoteirosPendentes } from "../components/AlertaRoteirosPendentes";
 import { AlertaConferencia } from "../components/AlertaConferencia";
 import { DashboardResumo } from "../components/DashboardResumo";
 import { DashboardHero } from "../components/dashboard/DashboardHero";
+import { DashboardVideoFundo } from "../components/dashboard/DashboardVideoFundo";
 import { useRevealOnScroll } from "../hooks/useRevealOnScroll";
 import "../styles/dashboard.css";
 import { ManutencoesBadgeAlert } from "./ManutencoesBadgeAlert";
@@ -1192,6 +1193,7 @@ export function Dashboard() {
   return (
 
     <div ref={dashboardRef} className="min-h-screen mb-dashboard">
+      <DashboardVideoFundo />
       {/* Header com boas-vindas */}
       <Navbar />
       <AlertaRoteirosPendentes />

@@ -633,3 +633,52 @@
     display: none;
   }
 }
+
+/* ---------- Vídeo de fundo com scroll (components/dashboard/DashboardVideoFundo) ----------
+   Fica entre o fundo claro da página e o conteúdo: o container isola a pilha
+   e o vídeo usa z-index:-1, então cards, botões e modais não mudam nada.
+   Bem transparente + véu branco: mistura com o fundo e não disputa atenção. */
+.mb-dashboard {
+  isolation: isolate;
+}
+.mb-video-fundo {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+.mb-video-fundo-midia {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transform: scale(1.04);
+  /* clareia as sombras do vídeo (fliperama escuro) para não acinzentar o fundo */
+  filter: saturate(1.4) brightness(1.35) contrast(0.7);
+  transition: opacity 0.9s ease;
+  will-change: opacity;
+  backface-visibility: hidden;
+}
+.mb-video-fundo-midia.pronto {
+  opacity: 0.17;
+}
+.mb-video-fundo-veu {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(244, 247, 255, 0.6) 0%, rgba(244, 247, 255, 0.4) 45%, rgba(244, 247, 255, 0.52) 100%),
+    radial-gradient(1200px 600px at 50% 30%, rgba(255, 255, 255, 0.25), transparent 70%);
+}
+@media (max-width: 767px) {
+  .mb-video-fundo-midia.pronto {
+    opacity: 0.14;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mb-video-fundo-midia {
+    transition: none;
+  }
+}
