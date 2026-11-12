@@ -1,5 +1,5 @@
 // ...existing code...
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Link } from "react-router-dom";
 import api from "../services/api";
 import { Navbar } from "../components/Navbar";
@@ -9,6 +9,9 @@ import { Badge } from "../components/UIComponents";
 import { AlertaRoteirosPendentes } from "../components/AlertaRoteirosPendentes";
 import { AlertaConferencia } from "../components/AlertaConferencia";
 import { DashboardResumo } from "../components/DashboardResumo";
+import { DashboardHero } from "../components/dashboard/DashboardHero";
+import { useRevealOnScroll } from "../hooks/useRevealOnScroll";
+import "../styles/dashboard.css";
 import { ManutencoesBadgeAlert } from "./ManutencoesBadgeAlert";
 import { useAuth } from "../contexts/AuthContext";
 import { CarrinhoWidget } from "../components/CarrinhoWidget";
@@ -380,6 +383,12 @@ export function Dashboard() {
     setLimiteLojasVisiveis(20);
     await carregarLojasEMaquinas();
   };
+
+  // Redesign: animação ao rolar e botão Atualizar com feedback
+  const dashboardRef = useRef(null);
+  const [atualizandoDashboard, setAtualizandoDashboard] = useState(false);
+  const [atualizacaoResumo, setAtualizacaoResumo] = useState(0);
+  useRevealOnScroll(dashboardRef, !stats.loading);
 
   const carregarDados = useCallback(async () => {
     try {
@@ -1643,9 +1652,21 @@ export function Dashboard() {
     return <PageLoader />;
   }
 
+  // Atualizar: recarrega os dados da página e os cards do mês (DashboardResumo)
+  const atualizarTudo = async () => {
+    if (atualizandoDashboard) return;
+    setAtualizandoDashboard(true);
+    setAtualizacaoResumo((n) => n + 1);
+    try {
+      await carregarDados();
+    } finally {
+      setAtualizandoDashboard(false);
+    }
+  };
+
   return (
 
-    <div className="min-h-screen bg-background-light bg-pattern teddy-pattern">
+    <div ref={dashboardRef} className="min-h-screen mb-dashboard">
       {/* Header com boas-vindas */}
       <Navbar />
       <AlertaRoteirosPendentes />
@@ -1677,67 +1698,21 @@ export function Dashboard() {
             }}
           />
         </div>
-        {/* Header com boas-vindas */}
-        <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h1 className="text-4xl font-bold mb-2">
-              <span className="text-gradient">Dashboard</span> 🧸
-            </h1>
-            <p className="text-gray-600">
-              Visão geral do seu sistema de pelúcias
-            </p>
-          </div>
-          <div className="flex flex-col xs:flex-row gap-2 w-full sm:w-auto">
-            <button
-              onClick={carregarDados}
-              className="btn-primary flex items-center gap-2 w-full xs:w-auto justify-center"
-              title="Atualizar dados"
-            >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                />
-              </svg>
-              Atualizar
-            </button>
-            {pode("veiculos", true) && (
-            <button
-              onClick={() => window.location.assign('/veiculos')}
-              className="btn-primary flex items-center gap-2 w-full xs:w-auto justify-center"
-              title="Ir para Veículos"
-            >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
-              Veículos
-            </button>
-            )}
-          </div>
-        </div>
+        {/* Cabeçalho (hero) */}
+        <DashboardHero
+          nomeUsuario={usuario?.nome}
+          onAtualizar={atualizarTudo}
+          atualizando={atualizandoDashboard}
+          mostrarVeiculos={pode("veiculos", true)}
+          onVeiculos={() => window.location.assign('/veiculos')}
+        />
 
         {/* Boxes principais: valores do mês, manutenções, movimentações, estoque e top */}
         <DashboardResumo
           podeManutencoes={pode("manutencoes", true)}
           podeMovimentacoes={pode("movimentacoes", true)}
           podeCarrinhos={podeAcessarCarrinhos}
+          atualizacao={atualizacaoResumo}
           alertasEstoque={
             verResumo
               ? {
@@ -1749,7 +1724,7 @@ export function Dashboard() {
           }
         />
         {verBusca && (
-        <div className="card-gradient mb-8">
+        <div className="card-gradient mb-8 reveal">
           <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
             <span className="text-3xl">🔍</span>
             Buscar Lojas e Máquinas
@@ -2404,7 +2379,7 @@ export function Dashboard() {
 
         {/* Alertas de Estoque - Apenas para ADMIN */}
         {verAlertasMaquinas && stats.alertas.length > 0 && (
-          <div className="card mb-8 border-l-4 border-red-500" id="alertas-estoque-maquinas">
+          <div className="card mb-8 border-l-4 border-red-500 reveal" id="alertas-estoque-maquinas">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
                 <span className="bg-red-100 p-2 rounded-lg">⚠️</span>
@@ -2504,7 +2479,7 @@ export function Dashboard() {
 
         {/* Alertas de Estoque de Lojas - Apenas para ADMIN */}
         {verAlertasLojas && alertasEstoqueLoja.length > 0 && (
-          <div className="card mb-8 border-l-4 border-orange-500">
+          <div className="card mb-8 border-l-4 border-orange-500 reveal">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
                 <span className="bg-orange-100 p-2 rounded-lg">🏪</span>
@@ -2600,7 +2575,7 @@ export function Dashboard() {
 
         {/* Distribuição por Loja */}
         {verDistribuicaoLojas && stats.balanco?.distribuicaoLojas?.length > 0 && (
-          <div className="card">
+          <div className="card reveal">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
                 <span className="bg-linear-to-br from-primary to-primary-dark p-2 rounded-lg">
@@ -2769,10 +2744,10 @@ export function Dashboard() {
 
         {/* Ação Rápida com design destacado */}
         {pode("movimentacoes", true) && (
-        <div className="mt-8 flex justify-center">
+        <div className="mt-8 flex justify-center reveal">
           <Link
             to="/movimentacoes?nova=true"
-            className="btn-primary text-lg px-10 py-4 flex items-center gap-3 shadow-2xl"
+            className="mb-btn mb-btn-cta text-lg px-10 py-4"
           >
             <svg
               className="w-6 h-6"

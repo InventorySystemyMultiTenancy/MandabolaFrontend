@@ -354,10 +354,10 @@ export function MandaAI() {
         <button
           type="button"
           onClick={() => setAberto(true)}
-          className="fixed bottom-4 right-4 z-[60] flex items-center gap-2 rounded-full bg-gradient-to-br from-primary to-primary-dark py-2.5 pl-2.5 pr-4 font-bold text-white shadow-xl ring-2 ring-accent-yellow transition hover:scale-105 sm:bottom-6 sm:right-6"
+          className="mandaai-fab fixed bottom-4 right-4 z-[60] flex items-center gap-2 rounded-full py-2.5 pl-2.5 pr-4 font-bold text-white sm:bottom-6 sm:right-6"
           title="MandaAI — manda aí a sua pergunta (Ctrl+K)"
         >
-          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white/15 text-accent-yellow">
+          <span className="mandaai-fab-icone flex h-9 w-9 items-center justify-center rounded-full bg-white/15 text-accent-yellow">
             <IconeMandaAI />
           </span>
           <span className="leading-tight text-left">
@@ -370,7 +370,7 @@ export function MandaAI() {
       {/* Painel */}
       {aberto && (
         <section
-          className="fixed inset-0 z-[60] flex flex-col bg-white shadow-2xl sm:inset-auto sm:bottom-6 sm:right-6 sm:h-[600px] sm:max-h-[calc(100vh-3rem)] sm:w-[400px] sm:rounded-2xl sm:ring-1 sm:ring-slate-200"
+          className="mandaai-painel fixed inset-0 z-[60] flex flex-col bg-white shadow-2xl sm:inset-auto sm:bottom-6 sm:right-6 sm:h-[600px] sm:max-h-[calc(100vh-3rem)] sm:w-[400px] sm:rounded-2xl sm:ring-1 sm:ring-slate-200"
           aria-label="MandaAI"
         >
           <header className="flex items-center gap-3 bg-gradient-to-r from-primary-dark to-primary px-4 py-3 text-white sm:rounded-t-2xl">

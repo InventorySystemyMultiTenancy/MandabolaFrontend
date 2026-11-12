@@ -22,9 +22,9 @@
     background: linear-gradient(
       to bottom right,
       white,
-      rgba(18, 161, 80, 0.1)
+      rgba(30, 91, 216, 0.1)
     );
-    border: 1px solid rgba(18, 161, 80, 0.3);
+    border: 1px solid rgba(30, 91, 216, 0.3);
     @apply rounded-2xl shadow-lg p-6 transition-all duration-300 hover:shadow-xl;
   }
 
@@ -36,7 +36,7 @@
   }
 
   .btn-primary:focus {
-    --tw-ring-color: rgba(18, 161, 80, 0.5);
+    --tw-ring-color: rgba(30, 91, 216, 0.5);
   }
 
   .btn-secondary {
@@ -47,11 +47,11 @@
   }
 
   .btn-secondary:hover {
-    background-color: rgba(18, 161, 80, 0.05);
+    background-color: rgba(30, 91, 216, 0.05);
   }
 
   .btn-secondary:focus {
-    --tw-ring-color: rgba(18, 161, 80, 0.5);
+    --tw-ring-color: rgba(30, 91, 216, 0.5);
   }
 
   .btn-danger {
@@ -69,7 +69,7 @@
 
   .input-field:focus {
     border-color: #1E5BD8;
-    --tw-ring-color: rgba(18, 161, 80, 0.1);
+    --tw-ring-color: rgba(30, 91, 216, 0.1);
     @apply ring-4;
   }
 
@@ -83,7 +83,7 @@
 
   .select-field:focus {
     border-color: #1E5BD8;
-    --tw-ring-color: rgba(18, 161, 80, 0.1);
+    --tw-ring-color: rgba(30, 91, 216, 0.1);
     @apply ring-4;
   }
 
@@ -93,9 +93,9 @@
   }
 
   .badge-warning {
-    background-color: rgba(45, 212, 191, 0.2);
+    background-color: rgba(56, 189, 248, 0.2);
     color: #7A5F00;
-    border: 1px solid rgba(45, 212, 191, 0.3);
+    border: 1px solid rgba(56, 189, 248, 0.3);
   }
 
   .badge-success {
@@ -118,8 +118,8 @@
   .table-modern thead {
     background: linear-gradient(
       to right,
-      rgba(18, 161, 80, 0.05),
-      rgba(45, 212, 191, 0.05)
+      rgba(30, 91, 216, 0.05),
+      rgba(56, 189, 248, 0.05)
     );
   }
 
@@ -136,7 +136,7 @@
   }
 
   .table-modern tbody tr:hover {
-    background-color: rgba(18, 161, 80, 0.1);
+    background-color: rgba(30, 91, 216, 0.1);
   }
 
   /* Alert boxes */
@@ -181,12 +181,12 @@
   .teddy-pattern {
     background-image: radial-gradient(
         circle at 20% 80%,
-        rgba(18, 161, 80, 0.03) 0%,
+        rgba(30, 91, 216, 0.03) 0%,
         transparent 50%
       ),
       radial-gradient(
         circle at 80% 20%,
-        rgba(45, 212, 191, 0.03) 0%,
+        rgba(56, 189, 248, 0.03) 0%,
         transparent 50%
       );
   }
@@ -194,7 +194,7 @@
   /* Loading spinner personalizado */
   .spinner {
     @apply animate-spin rounded-full border-4;
-    border-color: rgba(18, 161, 80, 0.2);
+    border-color: rgba(30, 91, 216, 0.2);
     border-top-color: #1E5BD8;
   }
 }
@@ -209,10 +209,10 @@
 
   .bg-pattern {
     background-image: linear-gradient(
-        rgba(18, 161, 80, 0.05) 1px,
+        rgba(30, 91, 216, 0.05) 1px,
         transparent 1px
       ),
-      linear-gradient(90deg, rgba(18, 161, 80, 0.05) 1px, transparent 1px);
+      linear-gradient(90deg, rgba(30, 91, 216, 0.05) 1px, transparent 1px);
     background-size: 20px 20px;
   }
 }
@@ -252,4 +252,37 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .menu-emoji-3d > span { animation: none; }
+}
+
+/* ---- MandaAI: botão flutuante e painel ---- */
+.mandaai-fab {
+  background: linear-gradient(135deg, #1E5BD8 0%, #0B1F5C 100%);
+  border: 1px solid rgba(245, 180, 0, 0.7);
+  box-shadow: 0 14px 30px -12px rgba(11, 31, 92, 0.8), 0 0 0 0 rgba(56, 189, 248, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  animation: mandaai-entra 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) 0.4s backwards,
+    mandaai-halo 3.2s ease-out 1.2s infinite;
+  transition: transform 0.2s ease;
+}
+.mandaai-fab::before { /* brilho que atravessa o botão de tempos em tempos */
+  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  background: linear-gradient(110deg, transparent 35%, rgba(255, 255, 255, 0.3) 50%, transparent 65%);
+  background-size: 250% 100%;
+  animation: mandaai-brilho 4.5s ease-in-out 1.5s infinite;
+}
+.mandaai-fab:hover { transform: translateY(-3px) scale(1.03); }
+.mandaai-fab:active { transform: scale(0.97); }
+.mandaai-fab:focus-visible { outline: 2px solid #22D3EE; outline-offset: 3px; }
+.mandaai-fab-icone { transition: transform 0.35s ease; }
+.mandaai-fab:hover .mandaai-fab-icone { transform: rotate(-14deg) scale(1.08); }
+@keyframes mandaai-entra { from { opacity: 0; transform: translateY(24px) scale(0.85); } }
+@keyframes mandaai-halo {
+  0% { box-shadow: 0 14px 30px -12px rgba(11, 31, 92, 0.8), 0 0 0 0 rgba(56, 189, 248, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.18); }
+  60%, 100% { box-shadow: 0 14px 30px -12px rgba(11, 31, 92, 0.8), 0 0 0 12px rgba(56, 189, 248, 0), inset 0 1px 0 rgba(255, 255, 255, 0.18); }
+}
+@keyframes mandaai-brilho { 0%, 60% { background-position: 150% 0; } 100% { background-position: -50% 0; } }
+.mandaai-painel { animation: mandaai-abre 0.28s cubic-bezier(0.2, 0.8, 0.2, 1); transform-origin: bottom right; }
+@keyframes mandaai-abre { from { opacity: 0; transform: translateY(16px) scale(0.96); } }
+@media (prefers-reduced-motion: reduce) {
+  .mandaai-fab, .mandaai-fab::before, .mandaai-painel { animation: none; }
 }
