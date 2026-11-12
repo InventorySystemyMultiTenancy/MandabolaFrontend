@@ -41,7 +41,11 @@ export function DashboardVideoFundo() {
   const [mobile, setMobile] = useState(
     () => typeof window !== "undefined" && window.matchMedia?.(consultaMobile).matches,
   );
-  const [pronto, setPronto] = useState(false);
+  // Guarda QUAL versão já carregou: ao trocar celular/desktop a nova começa
+  // invisível sem precisar resetar estado dentro do efeito.
+  const versao = mobile ? "mobile" : "desktop";
+  const [versaoPronta, setVersaoPronta] = useState(null);
+  const pronto = versaoPronta === versao;
 
   // Troca a versão do vídeo se a tela mudar de celular para desktop (e vice-versa)
   useEffect(() => {
@@ -88,12 +92,11 @@ export function DashboardVideoFundo() {
       // "liga e desliga" rápido força a decodificação.
       const tocar = video.play();
       if (tocar) tocar.then(() => video.pause()).catch(() => {});
-      setPronto(true);
+      setVersaoPronta(versao);
       window.addEventListener("scroll", aoRolar, { passive: true });
       window.addEventListener("resize", aoRolar, { passive: true });
     };
 
-    setPronto(false);
     video.addEventListener("seeked", aoTerminarBusca);
     video.addEventListener("loadedmetadata", aoCarregar);
     if (video.readyState >= 1) aoCarregar();
@@ -106,7 +109,7 @@ export function DashboardVideoFundo() {
       window.removeEventListener("scroll", aoRolar);
       window.removeEventListener("resize", aoRolar);
     };
-  }, [estatico, mobile]);
+  }, [estatico, versao]);
 
   return (
     <div className="mb-video-fundo" aria-hidden="true">
@@ -114,7 +117,7 @@ export function DashboardVideoFundo() {
         <img src={POSTER} alt="" className="mb-video-fundo-midia pronto" />
       ) : (
         <video
-          key={mobile ? "mobile" : "desktop"}
+          key={versao}
           ref={videoRef}
           className={`mb-video-fundo-midia ${pronto ? "pronto" : ""}`}
           src={mobile ? VIDEO_MOBILE : VIDEO_DESKTOP}
