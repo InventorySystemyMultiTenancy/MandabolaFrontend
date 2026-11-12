@@ -50,6 +50,12 @@ export function Navbar() {
 
   const isAdmin = usuario?.role === "ADMIN";
 
+  // Separa o emoji do início do rótulo ("🎮 Máquinas") para estilizar só o ícone.
+  const separarEmoji = (label) => {
+    const m = String(label).match(/^(\p{Extended_Pictographic}(?:\uFE0F|\u200D\p{Extended_Pictographic})*)\s*(.*)$/u);
+    return m ? { emoji: m[1], texto: m[2] } : { emoji: null, texto: label };
+  };
+
   // Quem não tem a aba Dashboard não vê o widget do carrinho: o botão de
   // devolver o próprio carrinho fica aqui no topo, em todas as páginas.
   const semDashboard = Boolean(usuario) && !pode("dashboard", true);
@@ -111,7 +117,7 @@ export function Navbar() {
     <nav
       className="relative shadow-2xl border-b-4 border-accent-yellow z-50"
       style={{
-        background: "linear-gradient(to right, #0B1F5C, #0E8C83)",
+        background: "linear-gradient(to right, #0B1F5C, #1E5BD8)",
         textShadow: "0 2px 4px rgba(0,0,0,0.5)",
         color: "#FFFFFF",
       }}
@@ -229,16 +235,24 @@ export function Navbar() {
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-              {links.map((link) => (
-                <Link
-                  key={link.to}
-                  to={link.to}
-                  onClick={closeMenu}
-                  className={linkClass(link.to)}
-                >
-                  <span className="flex-1">{link.label}</span>
-                </Link>
-              ))}
+              {links.map((link, i) => {
+                const { emoji, texto } = separarEmoji(link.label);
+                return (
+                  <Link
+                    key={link.to}
+                    to={link.to}
+                    onClick={closeMenu}
+                    className={`${linkClass(link.to)} menu-aba-3d`}
+                  >
+                    {emoji && (
+                      <span className="menu-emoji-3d" aria-hidden="true">
+                        <span style={{ animationDelay: `${(i % 6) * 0.35}s` }}>{emoji}</span>
+                      </span>
+                    )}
+                    <span className="flex-1">{texto}</span>
+                  </Link>
+                );
+              })}
             </div>
 
             {/* User Info Mobile */}
