@@ -47,9 +47,14 @@ export function MaquinaForm() {
   const [horario, setHorario] = useState(() => horarioParaEditor(null));
 
   const [searchParams] = useSearchParams();
+  // Leitores cadastrados na conta Machine Pay (para puxar o nome da máquina)
+  const [leitoresMP, setLeitoresMP] = useState([]);
+  const [leitoresMPStatus, setLeitoresMPStatus] = useState("carregando"); // carregando | ok | indisponivel
+  const [leitorEscolhido, setLeitorEscolhido] = useState("");
 
   useEffect(() => {
     carregarLojas();
+    carregarLeitoresMachinePay();
     if (isEdit) {
       carregarMaquina();
     } else {
@@ -78,6 +83,33 @@ export function MaquinaForm() {
           (error.response?.data?.error || error.message)
       );
     }
+  };
+
+  const carregarLeitoresMachinePay = async () => {
+    try {
+      const { data } = await api.get("/machine-pay/conta/leitores");
+      setLeitoresMP((data?.leitores || []).filter((l) => !l.caixaLivre));
+      setLeitoresMPStatus("ok");
+    } catch {
+      // Sem permissão ou Machine Pay não configurada: o cadastro segue manual
+      setLeitoresMPStatus("indisponivel");
+    }
+  };
+
+  // Escolher um leitor preenche nome e vínculo Machine Pay; o resto
+  // (forças, pulso, capacidade, loja...) o usuário define para esta máquina.
+  const escolherLeitor = (posId) => {
+    setLeitorEscolhido(posId);
+    const leitor = leitoresMP.find((l) => String(l.posId) === String(posId));
+    if (!leitor) return;
+    setFormData((atual) => ({
+      ...atual,
+      nome: isEdit && atual.nome ? atual.nome : leitor.nomePonto || atual.nome,
+      codigo: atual.codigo || `MP${leitor.posId}`,
+      machinePayPosId: String(leitor.posId),
+      machinePayUsrId: leitor.usrId ? String(leitor.usrId) : atual.machinePayUsrId,
+    }));
+    setErrosCampo((atual) => ({ ...atual, machinePayPosId: "" }));
   };
 
   const carregarMaquina = async () => {
@@ -146,12 +178,6 @@ export function MaquinaForm() {
         typeof formData.loja_id
       ); // Debug
 
-      if (!formData.loja_id || formData.loja_id === "") {
-        setError("Por favor, selecione uma loja");
-        setLoading(false);
-        return;
-      }
-
       if (!formData.codigo || formData.codigo.trim() === "") {
         setError("Por favor, informe o código da máquina");
         setLoading(false);
@@ -169,7 +195,7 @@ export function MaquinaForm() {
       const data = {
         codigo: formData.codigo.trim(),
         nome: formData.nome.trim(),
-        lojaId: formData.loja_id,
+        lojaId: formData.loja_id || null,
         tipo: formData.tipo?.trim() || null,
         capacidadePadrao: parseInt(formData.capacidadePadrao, 10) || 0,
         // Removido valorMoeda e moedasNecessarias
@@ -238,6 +264,45 @@ export function MaquinaForm() {
 
         <div className="card-gradient">
           <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Puxar a máquina do cadastro da Machine Pay */}
+            {leitoresMPStatus !== "indisponivel" && (
+              <div className="rounded-xl border border-primary/30 bg-primary/5 p-4">
+                <label className="block text-sm font-bold text-primary-dark mb-1">
+                  💳 Puxar máquina da Machine Pay
+                </label>
+                <p className="text-xs text-gray-600 mb-3">
+                  Escolha a máquina cadastrada na Machine Pay: o nome e o vínculo do leitor são preenchidos.
+                  Depois ajuste as características desta máquina (forças, pulso, capacidade...) e a loja, se quiser.
+                </p>
+                {leitoresMPStatus === "carregando" ? (
+                  <p className="text-sm text-gray-500">Carregando máquinas da Machine Pay...</p>
+                ) : leitoresMP.length === 0 ? (
+                  <p className="text-sm text-gray-500">Nenhuma máquina encontrada na conta Machine Pay.</p>
+                ) : (
+                  <select
+                    value={leitorEscolhido}
+                    onChange={(e) => escolherLeitor(e.target.value)}
+                    className="select-field"
+                  >
+                    <option value="">Selecione uma máquina da Machine Pay...</option>
+                    {[...leitoresMP]
+                      .sort((a, b) => Number(Boolean(a.maquina)) - Number(Boolean(b.maquina)) ||
+                        String(a.nomePonto || "").localeCompare(String(b.nomePonto || "")))
+                      .map((l) => {
+                        const vinculada = l.maquina && (!isEdit || String(l.maquina.id) !== String(id));
+                        return (
+                          <option key={l.posId} value={l.posId} disabled={Boolean(vinculada)}>
+                            {l.nomePonto || "Sem nome"} — POS {l.posId}
+                            {vinculada ? ` (já cadastrada: ${l.maquina.nome || l.maquina.codigo})` : ""}
+                            {l.online === false ? " · offline" : ""}
+                          </option>
+                        );
+                      })}
+                  </select>
+                )}
+              </div>
+            )}
+
             {/* Informações Básicas */}
             <div>
               <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
@@ -288,16 +353,15 @@ export function MaquinaForm() {
 
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Loja *
+                    Loja
                   </label>
                   <select
                     name="loja_id"
                     value={formData.loja_id}
                     onChange={handleChange}
                     className="select-field"
-                    required
                   >
-                    <option value="">Selecione uma loja...</option>
+                    <option value="">Sem loja (associar depois)</option>
                     {lojas.map((loja) => (
                       <option key={loja.id} value={loja.id}>
                         {loja.nome}

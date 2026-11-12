@@ -88,7 +88,7 @@ export function Maquinas() {
 
   // Filtro por loja (backend já filtra por ativo/inativo)
   const maquinasFiltradas = maquinas.filter((m) => {
-    const lojaOk = filtroLoja ? m.lojaId === filtroLoja : true;
+    const lojaOk = !filtroLoja ? true : filtroLoja === "__sem_loja__" ? !m.lojaId : m.lojaId === filtroLoja;
     const buscaOk = busca.trim() === "" ||
       (m.nome && m.nome.toLowerCase().includes(busca.toLowerCase())) ||
       (m.codigo && m.codigo.toLowerCase().includes(busca.toLowerCase()));
@@ -153,7 +153,14 @@ export function Maquinas() {
       key: "loja",
       label: "Loja",
       render: (maquina) => {
-        return lojasMap.get(maquina.lojaId) || `N/A (ID: ${maquina.lojaId})`;
+        if (!maquina.lojaId) {
+          return (
+            <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-800">
+              Sem loja
+            </span>
+          );
+        }
+        return lojasMap.get(maquina.lojaId) || "Loja não encontrada";
       },
     },
     {
@@ -250,6 +257,7 @@ export function Maquinas() {
                 className="select-field"
               >
                 <option value="">Todas as Lojas</option>
+                <option value="__sem_loja__">Sem loja</option>
                 {lojas.map((loja) => (
                   <option key={loja.id} value={loja.id}>
                     {loja.nome}
