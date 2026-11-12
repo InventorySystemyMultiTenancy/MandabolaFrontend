@@ -4,8 +4,8 @@
 const PADRAO = "https://mandabola-backend.onrender.com/api";
 
 export const API_URL = (() => {
-  const url = String(import.meta.env.VITE_API_URL || PADRAO)
-    .trim()
-    .replace(/\/+$/, "");
+  const bruto = String(import.meta.env.VITE_API_URL || "").trim();
+  // Valor que não é endereço http(s) (ex: uma chave colada por engano) é ignorado.
+  const url = (/^https?:\/\//i.test(bruto) ? bruto : PADRAO).replace(/\/+$/, "");
   return /\/api$/.test(url) ? url : `${url}/api`;
 })();
