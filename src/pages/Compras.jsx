@@ -274,7 +274,18 @@ function EstoqueBase({ lojas, recarregar }) {
   const [aviso, setAviso] = useState(null);
   const [enviando, setEnviando] = useState(false);
 
-  const carregar = () => api.get("/compras/estoque-base").then((r) => setDados(r.data)).catch(() => setDados({ itens: [] }));
+  // Normaliza a resposta: a tela nunca quebra se a API vier sem algum campo.
+  const normalizar = (d) => ({
+    ...(d && typeof d === "object" && !Array.isArray(d) ? d : {}),
+    itens: Array.isArray(d?.itens) ? d.itens : [],
+    totalUnidades: Number(d?.totalUnidades) || 0,
+    valorTotal: Number(d?.valorTotal) || 0,
+  });
+  const carregar = () =>
+    api
+      .get("/compras/estoque-base")
+      .then((r) => setDados(normalizar(r.data)))
+      .catch(() => setDados(normalizar(null)));
   useEffect(() => {
     carregar();
   }, []);

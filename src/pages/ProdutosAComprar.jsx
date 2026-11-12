@@ -596,7 +596,7 @@ export function ProdutosAComprar() {
         </head>
         <body>
           ${lojasSectionsHtml}
-          <script>window.onload = function() { window.print(); };<\/script>
+          <script>window.onload = function() { window.print(); };</script>
         </body>
       </html>
     `);

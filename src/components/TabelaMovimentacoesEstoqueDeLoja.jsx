@@ -4,12 +4,10 @@ import api from "../services/api";
 
 export default function TabelaMovimentacoesEstoqueDeLoja({
   movimentacoesEstoqueLoja = [],
-  lojas = [],
   filtroLojaEstoque = "",
   filtroDataEstoque = "",
   filtroResponsavelEstoque = "",
   setEditandoEstoqueLoja,
-  setExcluindoEstoqueLoja,
   onChangeEstoqueLoja, // Função para recarregar estoque consolidado
 }) {
   // Função para deletar movimentação e recarregar estoque consolidado
@@ -19,7 +17,7 @@ export default function TabelaMovimentacoesEstoqueDeLoja({
     try {
       await api.delete(`/movimentacao-estoque-loja/${mov.id}`);
       if (typeof onChangeEstoqueLoja === "function") onChangeEstoqueLoja();
-    } catch (err) {
+    } catch {
       alert("Erro ao deletar movimentação de estoque de loja.");
     }
   };

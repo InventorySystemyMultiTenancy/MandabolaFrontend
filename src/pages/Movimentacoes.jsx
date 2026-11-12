@@ -739,7 +739,7 @@ export function Movimentacoes() {
     },
     {
       // Removido campo de moedas
-      render: (mov) => (
+      render: () => (
         <div className="flex items-center gap-1">
           <span className="text-lg">🎫</span>
           {/* Removido campo de moedas */}
@@ -770,39 +770,6 @@ export function Movimentacoes() {
   ];
 
 
-  // --- ROTEIROS BOLINHA ---
-  const [bolinhaRoteiros, setBolinhaRoteiros] = useState([]);
-
-  // Carregar roteiros bolinha do backend (filtrar por zona)
-  useEffect(() => {
-    const fetchBolinha = async () => {
-      try {
-        const res = await api.get("/roteiros");
-        // Filtra roteiros cuja zona começa com 'Bolinha'
-        const bolinhas = (res.data || []).filter(r => (r.zona || "").toLowerCase().startsWith("bolinha"));
-        setBolinhaRoteiros(bolinhas.map(r => ({ ...r, editando: false })));
-      } catch (err) {
-        setBolinhaRoteiros([]);
-      }
-    };
-    fetchBolinha();
-  }, []);
-
-  // Editar nome do roteiro bolinha (apenas frontend, ajuste para persistir se backend permitir)
-  const handleEditBolinhaNome = (id, nome) => {
-    setBolinhaRoteiros(prev => prev.map(r => r.id === id ? { ...r, nome, editando: false } : r));
-    // TODO: Se backend permitir edição, faça um PUT aqui
-  };
-  const handleStartEditBolinha = (id) => {
-    setBolinhaRoteiros(prev => prev.map(r => r.id === id ? { ...r, editando: true } : r));
-  };
-  const handleZoneChangeBolinha = (id, zona) => {
-    setBolinhaRoteiros(prev => prev.map(r => r.id === id ? { ...r, zona } : r));
-    // TODO: Se backend permitir edição, faça um PUT aqui
-  };
-
-  // Filtragem por zona/nome (mantém apenas se necessário)
-  const bolinhaFiltrados = bolinhaRoteiros;
 
   if (podeGerenciarMov) {
     columns.push({

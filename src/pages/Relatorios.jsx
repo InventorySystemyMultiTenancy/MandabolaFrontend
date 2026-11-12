@@ -9,7 +9,7 @@ import { useAuth } from "../contexts/AuthContext";
 
 import { ResultadoLojas } from "../components/ResultadoLojas";
 export function Relatorios() {
-  const { usuario, isAdmin } = useAuth();
+  const { isAdmin } = useAuth();
   const navigate = useNavigate();
   // Pré-preenchimento vindo da MandaAI (/relatorios?lojaId=..&dataInicio=..&dataFim=..&autoGerar=true)
   const [searchParams] = useSearchParams();
@@ -409,7 +409,7 @@ export function Relatorios() {
       setLoadingLojas(true);
       const response = await api.get("/lojas");
       setLojas(response.data || []);
-    } catch (error) {
+    } catch {
       setError("Erro ao carregar lojas");
     } finally {
       setLoadingLojas(false);
@@ -581,7 +581,7 @@ export function Relatorios() {
               await api.post(`/roteiros/lojas/${lojaId}/calcular-comissao`, {
                 roteiroId: roteiroIdParaComissao,
               });
-            } catch (e) {
+            } catch {
               // Pode já estar calculada
             }
           }
@@ -1150,7 +1150,7 @@ export function Relatorios() {
       janela.document.open();
       janela.document.write(htmlPlanilha);
       janela.document.close();
-    } catch (e) {
+    } catch {
       setError("Erro ao gerar PDF em formato planilha. Tente novamente.");
     } finally {
       setLoadingPdfPlanilha(false);

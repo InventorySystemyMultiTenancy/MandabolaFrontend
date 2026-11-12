@@ -179,18 +179,6 @@ export function SelecionarRoteiro() {
       }
     }
   };
-    // Função para remover loja de todos os roteiros
-    const removerLojaDeTodosOsRoteiros = async (lojaId) => {
-      if (!window.confirm("Deseja realmente remover esta loja de todos os roteiros?")) return;
-      try {
-        setError("");
-        await api.delete(`/roteiros/remover-loja/${lojaId}`);
-        setSuccess("Loja removida de todos os roteiros!");
-        await carregarRoteiros();
-      } catch (error) {
-        setError("Erro ao remover loja: " + (error.response?.data?.error || error.message));
-      }
-    };
   const navigate = useNavigate();
 
   const [roteiros, setRoteiros] = useState([]);

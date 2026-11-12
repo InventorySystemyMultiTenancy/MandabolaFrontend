@@ -15,7 +15,6 @@ export function LojasRoteiro() {
   const [roteiro, setRoteiro] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
 
   useEffect(() => {
     carregarRoteiro();
@@ -27,7 +26,7 @@ export function LojasRoteiro() {
     try {
       const resp = await api.get("/roteiros/pendentes-dia");
       setRoteirosPendentesDia(resp.data || []);
-    } catch (e) {
+    } catch {
       // Não exibe erro para usuário
     }
   };
@@ -39,7 +38,7 @@ export function LojasRoteiro() {
     try {
       const resp = await api.get(`/roteiros/${roteiroId}`);
       setRoteiro(resp.data);
-    } catch (e) {
+    } catch {
       setError("Erro ao carregar roteiro.");
       setRoteiro(null);
     } finally {

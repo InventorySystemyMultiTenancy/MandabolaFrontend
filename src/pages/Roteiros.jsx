@@ -166,7 +166,6 @@ export function Roteiros() {
     const intervalId = window.setInterval(carregarLocalizacoesRotas, 15000);
 
     return () => window.clearInterval(intervalId);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [podeGerenciarRoteiros]);
 
   const carregarRoteiros = async () => {
@@ -433,9 +432,6 @@ export function Roteiros() {
     );
   });
 
-  // --- ROTEIROS BOLINHA ---
-  const bolinhaRoteiros = roteirosHoje.filter(r => r.tipo === 'bolinha');
-  const roteirosNormais = roteirosHoje.filter(r => r.tipo !== 'bolinha');
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
@@ -449,25 +445,6 @@ export function Roteiros() {
 
         {error && <AlertBox type="error" message={error} onClose={() => setError("")} />}
         {success && <AlertBox type="success" message={success} onClose={() => setSuccess("")} />}
-
-        {/* DEBUG INFO - REMOVER DEPOIS */}
-        {usuario?.role === "ADMIN" && (
-          <div className="mb-6 p-4 bg-yellow-100 border-2 border-yellow-400 rounded">
-            <p className="font-bold text-yellow-900">🔍 DEBUG (apenas para você, admin):</p>
-            <p className="text-sm">Seu role: {usuario?.role}</p>
-            <p className="text-sm">É admin: {isAdmin ? "SIM ✓" : "NÃO ✗"}</p>
-            <p className="text-sm">Total de roteiros hoje: {roteirosHoje.length}</p>
-            <p className="text-sm">Roteiros pendentes: {roteirosDisponiveis.length}</p>
-            {roteirosDisponiveis.length > 0 && (
-              <details className="mt-2">
-                <summary className="cursor-pointer text-sm font-semibold">Ver estrutura dos roteiros</summary>
-                <pre className="text-xs mt-2 bg-white p-2 rounded overflow-auto max-h-64">
-                  {JSON.stringify(roteirosDisponiveis, null, 2)}
-                </pre>
-              </details>
-            )}
-          </div>
-        )}
 
         {/* Botão para gerenciar roteiros (apenas admin) */}
         {podeGerenciarRoteiros && (

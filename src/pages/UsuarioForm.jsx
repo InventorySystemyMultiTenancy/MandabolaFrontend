@@ -64,7 +64,7 @@ export function UsuarioForm() {
         personalizado: Array.isArray(usuario.permissoes),
         permissoes: Array.isArray(usuario.permissoes) ? usuario.permissoes : [],
       });
-    } catch (error) {
+    } catch {
       setError("Erro ao carregar usuário");
     } finally {
       setLoading(false);

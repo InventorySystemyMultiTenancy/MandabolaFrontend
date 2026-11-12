@@ -211,7 +211,9 @@ export function MovimentacoesLoja() {
             r.lojaId === lojaId && r.roteiroId === roteiroId && !r.recebido,
         );
         setAReceberPendente(existe);
-      } catch {}
+      } catch {
+        // Sem a lista de pendências, segue sem o aviso de "a receber".
+      }
 
       // Sincronizar localStorage com o estado do backend
       if (lojaTemMovimentacaoReal(lojaRes.data, lojasDoRoteiro)) {

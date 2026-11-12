@@ -56,11 +56,22 @@ export function CreditoRemotoPublico() {
   }, []);
 
   const carregar = useCallback(async () => {
+    // Sem o código do voucher no link não há o que buscar.
+    if (!token) {
+      setDados(null);
+      setExpirado("Link de voucher incompleto. Abra o link completo que você recebeu ou leia o QR Code de novo.");
+      setCarregando(false);
+      return;
+    }
     try {
       const response = await apiPublica.get("/credito-remoto/publico", {
         headers: { "X-Link-Token": token },
       });
-      setDados(response.data);
+      const d = response.data;
+      if (!d || typeof d !== "object" || Array.isArray(d)) {
+        throw new Error("resposta inválida");
+      }
+      setDados({ ...d, maquinas: Array.isArray(d.maquinas) ? d.maquinas : [] });
       setExpirado("");
     } catch (err) {
       const { situacao, descricao, error } = err.response?.data || {};

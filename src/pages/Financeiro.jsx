@@ -8,7 +8,7 @@ import { useAuth } from "../contexts/AuthContext";
 
 import { ResultadoLojas } from "../components/ResultadoLojas";
 export function Financeiro() {
-  const { usuario, pode } = useAuth();
+  const { pode } = useAuth();
   const [movimentacoes, setMovimentacoes] = useState([]);
   const [lojasAReceber, setLojasAReceber] = useState([]);
   const [loading, setLoading] = useState(true);

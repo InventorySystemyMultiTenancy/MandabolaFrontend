@@ -13,7 +13,7 @@ export function AlertaFinanceiro() {
 
   const verificarPendentes = async () => {
     try {
-      const [movsRes, areceberRes] = await Promise.all([
+      const [, areceberRes] = await Promise.all([
         api.get("/movimentacoes/pendentes-financeiro"),
         api.get("/roteiros/financeiro/areceber"),
       ]);

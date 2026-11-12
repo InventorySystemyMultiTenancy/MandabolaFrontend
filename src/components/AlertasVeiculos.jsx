@@ -11,7 +11,7 @@ const nivelCor = {
 export default function AlertasVeiculos() {
   const [alertas, setAlertas] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { usuario, isAdmin } = useContext(AuthContext);
+  const { isAdmin } = useContext(AuthContext);
 
   useEffect(() => {
     // Definimos a função DENTRO do useEffect para evitar problemas de dependência

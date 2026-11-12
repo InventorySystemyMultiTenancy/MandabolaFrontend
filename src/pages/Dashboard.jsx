@@ -317,7 +317,6 @@ export function Dashboard() {
     balanco: null,
     loading: true,
   });
-  const [roteirosHoje, setRoteirosHoje] = useState([]);
 
   // Estados para busca e navegação
 
@@ -325,8 +324,6 @@ export function Dashboard() {
   const [lojaSelecionada, setLojaSelecionada] = useState(null);
   const [maquinaSelecionada, setMaquinaSelecionada] = useState(null);
   const [loadingMaquina, setLoadingMaquina] = useState(false);
-  const [mostrarDetalhesProdutos, setMostrarDetalhesProdutos] = useState(false);
-  const [vendasPorProduto, setVendasPorProduto] = useState([]);
   const [dataInicio, setDataInicio] = useState("");
   const [dataFim, setDataFim] = useState("");
   const [alertasEstoqueLoja, setAlertasEstoqueLoja] = useState([]);
@@ -336,9 +333,6 @@ export function Dashboard() {
   const [editandoGasto, setEditandoGasto] = useState(null);
 
   // Estados para estoque das lojas
-  const [lojasComEstoque, setLojasComEstoque] = useState([]);
-  const [loadingEstoque, setLoadingEstoque] = useState(false);
-  const [lojaEstoqueExpanded, setLojaEstoqueExpanded] = useState({});
 
   // Estados para edição de estoque
   const [estoqueEditando, setEstoqueEditando] = useState(null); // { lojaId, estoque: [...] }
@@ -413,29 +407,10 @@ export function Dashboard() {
               return { data: null };
             })
           : Promise.resolve({ data: null });
-      const roteirosReq = !verResumo
-        ? Promise.resolve({ data: [] })
-        : (async () => {
-            const hojeStr = new Date().toISOString().split("T")[0];
-            const [fixoRes, bolinhaRes] = await Promise.all([
-              api.get("/roteiros", { params: { data: "2026-02-24" } }).catch(() => ({ data: [] })),
-              api.get("/roteiros", { params: { data: hojeStr } }).catch(() => ({ data: [] })),
-            ]);
-            const bolinhasHoje = (bolinhaRes.data || []).filter(
-              (r) => (r.zona || "").toLowerCase().startsWith("bolinha") || r.zona === "Roteiro Coringa"
-            );
-            const zonasFixo = new Set((fixoRes.data || []).map((r) => (r.zona || "").toLowerCase().trim()));
-            const bolinhasNaoDuplicadas = bolinhasHoje.filter(
-              (r) => !zonasFixo.has((r.zona || "").toLowerCase().trim())
-            );
-            return { data: [...(fixoRes.data || []), ...bolinhasNaoDuplicadas] };
-          })();
-
-      const [alertasRes, balancoRes, produtosRes, roteirosRes] = await Promise.all([
+      const [alertasRes, balancoRes, produtosRes] = await Promise.all([
         alertasReq,
         balancoReq,
         produtosReq,
-        roteirosReq,
       ]);
 
       setStats({
@@ -444,7 +419,6 @@ export function Dashboard() {
         loading: false,
       });
       setProdutos(produtosRes.data || []);
-      setRoteirosHoje(roteirosRes.data || []);
 
       // Alertas de lojas dependem da lista de lojas (o ADMIN carrega ao abrir a busca)
       if (temPermissoesPersonalizadas && verAlertasLojas) {
@@ -512,70 +486,6 @@ export function Dashboard() {
     }
   };
 
-
-  // Função utilitária para dividir array em lotes
-  function dividirEmLotes(array, tamanhoLote) {
-    const lotes = [];
-    for (let i = 0; i < array.length; i += tamanhoLote) {
-      lotes.push(array.slice(i, i + tamanhoLote));
-    }
-    return lotes;
-  }
-
-  const carregarEstoqueDasLojas = async () => {
-    try {
-      setLoadingEstoque(true);
-
-      // 1. Buscar todas as lojas
-      const lojasRes = await api.get("/lojas");
-      const lojas = lojasRes.data || [];
-
-      // 2. Buscar estoque em lotes para evitar sobrecarga
-      const tamanhoLote = 5; // Ajuste conforme necessário
-      const lotes = dividirEmLotes(lojas, tamanhoLote);
-      let resultado = [];
-
-      for (const lote of lotes) {
-        const lotePromises = lote.map(async (loja) => {
-          try {
-            const estoqueRes = await api.get(`/estoque-lojas/${loja.id}`);
-            const estoque = estoqueRes.data || [];
-            return {
-              ...loja,
-              estoque: estoque,
-              totalProdutos: estoque.length,
-              totalUnidades: estoque.reduce(
-                (sum, item) => sum + item.quantidade,
-                0
-              ),
-            };
-          } catch (error) {
-            console.error(`Erro ao carregar estoque da loja ${loja.id}:`, error);
-            return {
-              ...loja,
-              estoque: [],
-              totalProdutos: 0,
-              totalUnidades: 0,
-            };
-          }
-        });
-        const resultadoLote = await Promise.all(lotePromises);
-        resultado = resultado.concat(resultadoLote);
-      }
-      setLojasComEstoque(resultado);
-    } catch (error) {
-      console.error("Erro ao carregar estoque das lojas:", error);
-      setLojasComEstoque([]);
-    } finally {
-      setLoadingEstoque(false);
-    }
-  };
-
-  // Carregar estoque das lojas
-  useEffect(() => {
-    carregarEstoqueDasLojas();
-  }, []);
-
   const carregarDetalhesMaquina = async (maquinaId) => {
     try {
       setLoadingMaquina(true);
@@ -605,130 +515,6 @@ export function Dashboard() {
     }
   };
 
-  const carregarVendasPorProduto = async () => {
-    try {
-      // Buscar todos os dados necessários
-      const [movRes, produtosRes, lojasRes, maquinasRes] = await Promise.all([
-        api.get("/movimentacoes"),
-        api.get("/produtos"),
-        api.get("/lojas"),
-        api.get("/maquinas"),
-      ]);
-
-      const movimentacoes = movRes.data || [];
-      const produtosData = produtosRes.data || [];
-      const lojasData = lojasRes.data || [];
-      const maquinasData = maquinasRes.data || [];
-
-      console.log("Movimentações:", movimentacoes);
-      console.log("Produtos:", produtosData);
-      console.log("Lojas:", lojasData);
-      console.log("Máquinas:", maquinasData);
-
-      // Agrupar vendas por produto
-      const produtosMap = {};
-
-      movimentacoes.forEach((mov) => {
-        if (mov.detalhesProdutos && Array.isArray(mov.detalhesProdutos)) {
-          mov.detalhesProdutos.forEach((detalhe) => {
-            const produtoId = detalhe.produtoId;
-            const quantidadeSaiu = detalhe.quantidadeSaiu || 0;
-
-            // Buscar o produto no array de produtos
-            const produto = produtosData.find((p) => p.id === produtoId);
-            const produtoNome = produto?.nome || `Produto ${produtoId}`;
-
-            if (!produtosMap[produtoId]) {
-              produtosMap[produtoId] = {
-                id: produtoId,
-                nome: produtoNome,
-                emoji: produto?.emoji || "🧸",
-                totalVendido: 0,
-                vendasPorLoja: {},
-              };
-            }
-
-            produtosMap[produtoId].totalVendido += quantidadeSaiu;
-
-            // Buscar a máquina e depois a loja
-            const maquina =
-              maquinasData.find((m) => m.id === mov.maquinaId) || mov.maquina;
-            let lojaNome = "Loja não identificada";
-
-            if (maquina) {
-              // Se a máquina tem loja como objeto
-              if (maquina.loja?.nome) {
-                lojaNome = maquina.loja.nome;
-              }
-              // Se a máquina tem lojaId
-              else if (maquina.lojaId) {
-                const loja = lojasData.find((l) => l.id === maquina.lojaId);
-                lojaNome = loja?.nome || lojaNome;
-              }
-            }
-
-            if (!produtosMap[produtoId].vendasPorLoja[lojaNome]) {
-              produtosMap[produtoId].vendasPorLoja[lojaNome] = 0;
-            }
-            produtosMap[produtoId].vendasPorLoja[lojaNome] += quantidadeSaiu;
-          });
-        }
-      });
-
-      // Converter para array e ordenar por total vendido
-      const produtosArray = Object.values(produtosMap)
-        .filter((p) => p.totalVendido > 0)
-        .sort((a, b) => b.totalVendido - a.totalVendido);
-
-      console.log("Produtos agrupados:", produtosArray);
-      setVendasPorProduto(produtosArray);
-    } catch (error) {
-      console.error("Erro ao carregar vendas por produto:", error);
-      setVendasPorProduto([]);
-    }
-  };
-
-  const toggleDetalhesProdutos = () => {
-    if (!mostrarDetalhesProdutos && vendasPorProduto.length === 0) {
-      carregarVendasPorProduto();
-    }
-    setMostrarDetalhesProdutos(!mostrarDetalhesProdutos);
-  };
-
-  const toggleLojaEstoque = (lojaId) => {
-    setLojaEstoqueExpanded((prev) => ({
-      ...prev,
-      [lojaId]: !prev[lojaId],
-    }));
-  };
-
-  const abrirEdicaoEstoque = (loja) => {
-    // Criar um mapa dos produtos já cadastrados no estoque
-    const estoqueMap = new Map(
-      loja.estoque.map((item) => [item.produtoId, item])
-    );
-
-    // Criar lista completa com todos os produtos do sistema
-    const estoqueTodos = produtos.map((produto) => {
-      const itemExistente = estoqueMap.get(produto.id);
-      return {
-        id: itemExistente?.id || null, // null para produtos novos
-        produtoId: produto.id,
-        produtoNome: produto.nome,
-        produtoEmoji: produto.emoji,
-        produtoCodigo: produto.codigo,
-        quantidade: itemExistente?.quantidade || 0,
-        estoqueMinimo: itemExistente?.estoqueMinimo || 0,
-        ativo: itemExistente?.ativo ?? false, // respeita valor real do backend
-      };
-    });
-
-    setEstoqueEditando({
-      lojaId: loja.id,
-      lojaNome: loja.nome,
-      estoque: estoqueTodos,
-    });
-  };
 
   // ...
   // Exemplo de uso no JSX (dentro do modal de edição de estoque):
@@ -778,266 +564,6 @@ export function Dashboard() {
 
   // Função para imprimir relatório individual de uma loja
   // ...existing code...
-
-  // Função para imprimir relatório consolidado de todas as lojas
-  const imprimirRelatorioConsolidado = () => {
-    // Consolidar necessidades por produto
-    const necessidadesPorProduto = {};
-
-    lojasComEstoque.forEach((loja) => {
-      loja.estoque.forEach((item) => {
-        const falta = item.estoqueMinimo - item.quantidade;
-        if (falta > 0) {
-          if (!necessidadesPorProduto[item.produtoId]) {
-            necessidadesPorProduto[item.produtoId] = {
-              produto: item.produto,
-              totalNecessario: 0,
-              lojas: [],
-            };
-          }
-          necessidadesPorProduto[item.produtoId].totalNecessario += falta;
-          necessidadesPorProduto[item.produtoId].lojas.push({
-            loja: loja.nome,
-            atual: item.quantidade,
-            minimo: item.estoqueMinimo,
-            necessario: falta,
-          });
-        }
-      });
-    });
-
-    const produtosNecessarios = Object.values(necessidadesPorProduto);
-    const totalItensComprar = produtosNecessarios.reduce(
-      (acc, p) => acc + p.totalNecessario,
-      0
-    );
-
-    const htmlContent = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="utf-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Relatório Consolidado de Compras</title>
-          <style>
-            body {
-              font-family: Arial, sans-serif;
-              padding: 20px;
-              max-width: 1000px;
-              margin: 0 auto;
-            }
-            .header {
-              text-align: center;
-              margin-bottom: 30px;
-              border-bottom: 3px solid #FF69B4;
-              padding-bottom: 20px;
-            }
-            .header h1 {
-              color: #FF69B4;
-              margin: 0;
-              font-size: 28px;
-            }
-            .info-box {
-              background: #f8f9fa;
-              padding: 15px;
-              border-radius: 8px;
-              margin-bottom: 20px;
-              text-align: center;
-            }
-            .info-box h3 {
-              margin: 0;
-              color: #333;
-              font-size: 24px;
-            }
-            .section-title {
-              color: #333;
-              font-size: 20px;
-              margin: 25px 0 15px 0;
-              padding-bottom: 8px;
-              border-bottom: 2px solid #ddd;
-            }
-            table {
-              width: 100%;
-              border-collapse: collapse;
-              margin-bottom: 20px;
-            }
-            th {
-              background: #FF69B4;
-              color: white;
-              padding: 12px;
-              text-align: left;
-              font-weight: bold;
-            }
-            td {
-              padding: 10px 12px;
-              border-bottom: 1px solid #ddd;
-            }
-            tr:nth-child(even) {
-              background: #f8f9fa;
-            }
-            .sub-table {
-              margin: 10px 0;
-              background: #fff;
-            }
-            .sub-table th {
-              background: #ffd1dc;
-              color: #333;
-              font-size: 13px;
-            }
-            .sub-table td {
-              font-size: 13px;
-              padding: 8px;
-            }
-            .total-row {
-              background: #ffe4e1 !important;
-              font-weight: bold;
-            }
-            .footer {
-              margin-top: 30px;
-              text-align: center;
-              color: #666;
-              font-size: 12px;
-              border-top: 1px solid #ddd;
-              padding-top: 15px;
-            }
-            @media print {
-              body { padding: 10px; }
-            }
-          </style>
-        </head>
-        <body>
-          <div class="header">
-            <h1>🛒 Relatório Consolidado de Compras</h1>
-            <p><strong>Data:</strong> ${new Date().toLocaleDateString(
-              "pt-BR"
-            )} às ${new Date().toLocaleTimeString("pt-BR")}</p>
-          </div>
-
-          <div class="info-box">
-            <h3>📦 Total de Unidades a Comprar: ${totalItensComprar}</h3>
-            <p><strong>Tipos de Produtos:</strong> ${
-              produtosNecessarios.length
-            }</p>
-            <p><strong>Lojas Atendidas:</strong> ${lojasComEstoque.length}</p>
-          </div>
-
-          ${
-            produtosNecessarios.length > 0
-              ? `
-            <h2 class="section-title">📋 Lista de Compras por Produto</h2>
-            <table>
-              <thead>
-                <tr>
-                  <th>Produto</th>
-                  <th>Total a Comprar</th>
-                  <th>Distribuição por Loja</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${produtosNecessarios
-                  .map(
-                    (item) => `
-                      <tr>
-                        <td>
-                          <strong>${item.produto.emoji || "📦"} ${
-                      item.produto.nome
-                    }</strong><br>
-                          <small>Cód: ${item.produto.codigo || "-"}</small>
-                        </td>
-                        <td style="font-size: 18px; font-weight: bold; color: #FF69B4;">
-                          ${item.totalNecessario} unidades
-                        </td>
-                        <td>
-                          <table class="sub-table" style="width: 100%;">
-                            <thead>
-                              <tr>
-                                <th>Loja</th>
-                                <th>Atual</th>
-                                <th>Mínimo</th>
-                                <th>Enviar</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              ${item.lojas
-                                .map(
-                                  (l) => `
-                                  <tr>
-                                    <td>${l.loja}</td>
-                                    <td>${l.atual}</td>
-                                    <td>${l.minimo}</td>
-                                    <td><strong>${l.necessario}</strong></td>
-                                  </tr>
-                                `
-                                )
-                                .join("")}
-                            </tbody>
-                          </table>
-                        </td>
-                      </tr>
-                    `
-                  )
-                  .join("")}
-                <tr class="total-row">
-                  <td colspan="2"><strong>TOTAL GERAL A COMPRAR:</strong></td>
-                  <td style="font-size: 20px; color: #FF69B4;"><strong>${totalItensComprar} unidades</strong></td>
-                </tr>
-              </tbody>
-            </table>
-          `
-              : '<p style="text-align: center; color: #28a745; font-size: 18px; padding: 20px;">✅ Todas as lojas estão com estoque adequado!</p>'
-          }
-
-          <div class="footer">
-            <p>Relatório gerado automaticamente pelo Sistema Manda Bola Diversões</p>
-          </div>
-        </body>
-      </html>
-    `;
-
-    // Detectar se é mobile
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
-    
-    if (isMobile) {
-      // Mobile: Mostrar alerta e opção de imprimir
-      Swal.fire({
-        title: 'Relatório Consolidado',
-        html: '<p>Relatório consolidado gerado! Clique em Imprimir para visualizar.</p>',
-        icon: 'success',
-        showCancelButton: true,
-        confirmButtonText: '🖨️ Imprimir',
-        cancelButtonText: 'Fechar',
-        confirmButtonColor: '#1e40af'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          const blob = new Blob([htmlContent], { type: 'text/html' });
-          const url = URL.createObjectURL(blob);
-          const printWindow = window.open(url, '_blank');
-          if (printWindow) {
-            printWindow.onload = () => {
-              setTimeout(() => {
-                printWindow.print();
-                URL.revokeObjectURL(url);
-              }, 500);
-            };
-          } else {
-            Swal.fire('Pop-up Bloqueado', 'Permita pop-ups para imprimir.', 'warning');
-          }
-        }
-      });
-    } else {
-      const printWindow = window.open("", "_blank");
-      if (printWindow) {
-        printWindow.document.write(htmlContent);
-        printWindow.document.close();
-        printWindow.focus();
-        setTimeout(() => {
-          printWindow.print();
-        }, 250);
-      } else {
-        Swal.fire('Pop-up Bloqueado', 'Permita pop-ups para visualizar.', 'warning');
-      }
-    }
-  };
 
   const salvarEstoque = async () => {
     try {
@@ -1115,7 +641,6 @@ export function Dashboard() {
       }
 
       // Recarregar os dados
-      await carregarEstoqueDasLojas();
       fecharEdicaoEstoque();
     } catch (error) {
       console.error("Erro ao salvar estoque:", error);
